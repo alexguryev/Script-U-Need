@@ -1,0 +1,4 @@
+gradio>=5.46
+pillow>=11.0
+requests>=2.32
+PyYAML>=6.0

@@ -1,0 +1,33 @@
+
+/* Group: remove background and borders from inner components, keep only the shared outer border */
+.sun-group .block {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+textarea {
+    background-color: #1E293B;
+}
+
+#cont_hidden {
+    display: none;
+}
+
+footer {
+    visibility: hidden;
+}
+
+/* ColorPick: allow picker popup to overflow cell boundaries */
+.colorpick-cell {
+    overflow: visible !important;
+}
+
+.colorpick-row {
+    overflow: visible !important;
+    flex-wrap: nowrap !important;
+}
+
+.colorpick-row > .colorpick-cell {
+    flex: 1 1 0 !important;
+}

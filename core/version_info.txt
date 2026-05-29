@@ -1,0 +1,43 @@
+
+`1.3.3 (2026.05.29)`
+- UI tuning
+---
+`1.3.2 (2025.05.09)`
+- section `Images`
+    - `Aspect Ratio`
+    - `Atlas Decompose`
+- section `Code`
+    - `Code Space`
+---
+`1.3.1 (2025.03.23)`
+- internal functional fixes
+- section `Images`
+    - `Atlas Compose`
+---
+`1.3.0 (2025.03.16)`
+- section `Code`
+    - `JSON Good!`
+    - `Code Lines Counter`
+    - `Code Strip Comments`
+- section `Images`
+    - `Color Pick`
+- sound on
+---
+`1.2.0 (2025.03.01)`
+- CC refactor
+---
+`1.1.0 (2025.12.12)`
+- internal functional fixes, interface
+- sound off
+---
+`1.0.1 (2025.12.02)`
+- internal functional fixes
+- ported previously ready tools:
+    - `Find Models in Workflow`
+    - `Find Unused Models & Packs`
+    - `Store Unused Models`
+    - `Store Unused Nodepacks`
+---
+`1.0.0 (2025.12.01)`
+- base functional version
+- tool `Clear Metadata`

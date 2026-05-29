@@ -1,0 +1,20 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Tool settings (user-specific, not for repository)
+tools/tools.ini
+
+# Tokens and secrets
+*.token
+*.key
+
+# Windows shortcuts
+*.lnk
+
+# Test tool (not for public repository)
+tools/SUN_test.py
