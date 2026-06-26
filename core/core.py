@@ -5,9 +5,28 @@ import enum
 import gradio as gr
 from gu_funclib import *
 import importlib.util
+import importlib.metadata
 import inspect
 import os
 import sys
+
+
+# #########################################################################
+def _check_gu_funclib_version():
+    MIN_VER = (1, 8, 5)
+    MIN_STR = "1.8.5"
+    try:
+        ver_str = importlib.metadata.version("gu-funclib")
+        parts = tuple(int(x) for x in ver_str.split(".")[:3])
+        if parts < MIN_VER:
+            print(f"\033[93m[WARNING] gu-funclib {ver_str} installed, but {MIN_STR}+ required.")
+            print(f"          Run update_libs.bat to upgrade.\033[0m")
+        else:
+            print(f"\033[32m[OK] gu-funclib {ver_str}\033[0m")
+    except importlib.metadata.PackageNotFoundError:
+        print(f"\033[91m[ERROR] gu-funclib not found. Run setup.bat to install dependencies.\033[0m")
+
+_check_gu_funclib_version()
 
 """
 import copy

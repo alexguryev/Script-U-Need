@@ -59,7 +59,7 @@ if errorlevel 1 (
 
 echo.
 echo === Installed packages ===
-pip show gradio pillow requests PyYAML 2>nul | findstr /i "Name: Version:"
+pip show gradio pillow requests PyYAML gu-funclib 2>nul | findstr /i "Name: Version:"
 
 echo.
 echo Setup complete. Run start.bat to launch Script-U-Need.

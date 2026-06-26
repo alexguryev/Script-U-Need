@@ -1,4 +1,7 @@
 
+`1.3.4 (2026.06.26)`
+- gu_funclib make external
+---
 `1.3.3 (2026.05.29)`
 - UI tuning
 ---
