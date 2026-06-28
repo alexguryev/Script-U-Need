@@ -57,6 +57,15 @@ if errorlevel 1 (
     exit /b 1
 )
 
+:: Always upgrade gu-funclib to latest
+echo Upgrading gu-funclib...
+pip install --upgrade gu-funclib
+if errorlevel 1 (
+    echo ERROR: Failed to upgrade gu-funclib.
+    pause
+    exit /b 1
+)
+
 echo.
 echo === Installed packages ===
 pip show gradio pillow requests PyYAML gu-funclib 2>nul | findstr /i "Name: Version:"
