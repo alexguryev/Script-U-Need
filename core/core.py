@@ -14,7 +14,7 @@ import sys
 # #########################################################################
 def _check_gu_funclib_version():
     MIN_VER = (1, 8, 5)
-    MIN_STR = "1.8.5"
+    MIN_STR = "1.9.0"
     try:
         ver_str = importlib.metadata.version("gu-funclib")
         parts = tuple(int(x) for x in ver_str.split(".")[:3])
