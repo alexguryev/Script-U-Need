@@ -17,7 +17,7 @@ class C_SUN_Aspect(C_SUN_ToolBase):
     name =                "Aspect Ratio"
     output_lines =        1
     output_type =         TParamType.text
-    section =             TSections["Images"]
+    section =             TSections["Image"]
 
     inputs = {
         "width_in": {

@@ -3,7 +3,13 @@
 import configparser
 import enum
 import gradio as gr
-from gu_funclib import *
+try:
+    from gu_funclib import *
+except ImportError: # external PyPI dependency - install it on the first run
+    import subprocess, sys as _sys
+    print("\033[93m[SETUP] gu-funclib not found, installing from https://pypi.org/project/gu-funclib/ ...\033[0m")
+    subprocess.run([_sys.executable, "-m", "pip", "install", "--upgrade", "gu-funclib"], check=False)
+    from gu_funclib import *
 import importlib.util
 import importlib.metadata
 import inspect
@@ -13,20 +19,39 @@ import sys
 
 # #########################################################################
 def _check_gu_funclib_version():
-    MIN_VER = (1, 8, 5)
+    MIN_VER = (1, 9, 0)
     MIN_STR = "1.9.0"
     try:
         ver_str = importlib.metadata.version("gu-funclib")
         parts = tuple(int(x) for x in ver_str.split(".")[:3])
         if parts < MIN_VER:
             print(f"\033[93m[WARNING] gu-funclib {ver_str} installed, but {MIN_STR}+ required.")
-            print(f"          Run update_libs.bat to upgrade.\033[0m")
+            print(f"          Run setup.bat to upgrade.\033[0m")
         else:
             print(f"\033[32m[OK] gu-funclib {ver_str}\033[0m")
     except importlib.metadata.PackageNotFoundError:
         print(f"\033[91m[ERROR] gu-funclib not found. Run setup.bat to install dependencies.\033[0m")
 
 _check_gu_funclib_version()
+
+
+# #########################################################################
+FFMPEG_OK = False # is ffmpeg/ffprobe available in the system?
+ERR_NO_FFMPEG = "ffmpeg is not installed! Install ffmpeg (with ffprobe) and add it to the system PATH."
+
+def _check_ffmpeg():
+    global FFMPEG_OK
+    import shutil
+    ff = shutil.which("ffmpeg")
+    fp = shutil.which("ffprobe")
+    FFMPEG_OK = bool(ff) and bool(fp)
+    if FFMPEG_OK:
+        print(f"\033[32m[OK] ffmpeg found: {ff}\033[0m")
+    else:
+        missed = "ffmpeg" if not ff else "ffprobe"
+        print(f"\033[91m[ERROR] {missed} not found. {ERR_NO_FFMPEG}\033[0m")
+
+_check_ffmpeg()
 
 """
 import copy
@@ -53,6 +78,7 @@ import shutil
 ALLOWED_IMG_EXT = [".png", ".jpg", ".jpeg", ".bmp", ".dds", ".eps", ".bmp", ".tga", ".tif", ".tiff", ".webp"]
 ALLOWED_MOD_EXT = [".bin", ".ckpt", ".pt", ".pth", ".safetensors", ".sft"]
 #ALLOWED_VID_EXT = [".mp4"]
+ALLOWED_VID_EXT = [".mp4", ".mov", ".avi"]
 DIR_SUN = os.getcwd()
 DIR_CORE = os.path.join(DIR_SUN, "core")
 DIR_TEMP = os.path.join(DIR_SUN, "tmp")
@@ -93,6 +119,7 @@ ERR_NO_SRCFILE = "Error: source file not set!"
 ERR_NO_SRCFOLDER = "Error: source folder not set!"
 ERR_NO_SRCIMAGE = "Error: source image not set!"
 ERR_NO_SRCVIDEO = "Error: source video not set!"
+ERR_NO_VIDFILES = "Error: no video files found!"
 ERR_RETRIEVE = "Error: result not returned!"
 ERR_SRCFOLDER = "Check the source folder!"
 ERR_SUNFOLDER = "Cannot use the Script-U-Need root folder!"
@@ -144,15 +171,17 @@ NOT_ARGUM_INPUTS = [
 
 TSections = { # tools sections order
     "Test":     0,
-    "Images":   1,
-    "ComfyUI":  2,
+    "Image":    1,
+    "Video":    2,
     "Code":     3,
+    "ComfyUI":  4,
 }
 TSectionIcons = [ # tools icons in the same order!
     "👾", # test
     "🖼",  # image
-    "♨️", # comfy
-    "📄"  # code
+    "🎞️", # video
+    "📄", # code
+    "♨️"  # comfy
 ]
 
 

@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from gu_funclib import *
 
 SUN_NAME = "Script-U-Need"
-__version__ = "1.3.6" # maj:arch.changes . min:new functionality . tuning:fixes,tuning (main module only!)
+__version__ = "1.4.0" # maj:arch.changes . min:new functionality . tuning:fixes,tuning (main module only!)
 CurVerInfo = f"{SUN_NAME} Manager: V{__version__} | Gradio: V{gr.__version__}"
 conlog(f"^U{CurVerInfo}~")
 

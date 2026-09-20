@@ -1,4 +1,9 @@
 
+`1.4.0 (2026.09.20)`
+- sections re-order
+- section `Video`
+    - `Video Conform`
+---
 `1.3.6 (2026.07.28)`
 - dependencies fix
 ---
@@ -12,7 +17,7 @@
 - UI tuning
 ---
 `1.3.2 (2025.05.09)`
-- section `Images`
+- section `Image`
     - `Aspect Ratio`
     - `Atlas Decompose`
 - section `Code`
@@ -20,7 +25,7 @@
 ---
 `1.3.1 (2025.03.23)`
 - internal functional fixes
-- section `Images`
+- section `Image`
     - `Atlas Compose`
 ---
 `1.3.0 (2025.03.16)`
@@ -28,7 +33,7 @@
     - `JSON Good!`
     - `Code Lines Counter`
     - `Code Strip Comments`
-- section `Images`
+- section `Image`
     - `Color Pick`
 - sound on
 ---

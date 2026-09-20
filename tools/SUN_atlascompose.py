@@ -45,7 +45,7 @@ class C_SUN_AtlasCompose(C_SUN_ToolBase):
     info =                "Assemble a square atlas from same-size images"
     name =                "Atlas Compose"
     output_type =         TParamType.image
-    section =             TSections["Images"]
+    section =             TSections["Image"]
 
     inputs = {}
 

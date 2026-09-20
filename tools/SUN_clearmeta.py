@@ -20,7 +20,7 @@ class C_SUN_ClearMeta(C_SUN_ToolBase):
     info =                "Remove metadata from images"
     name =                "Clear Metadata"
     output_type =         TParamType.text
-    section =             TSections["Images"]
+    section =             TSections["Image"]
 
     inputs = {
         "stub": { # just for selector!

@@ -85,7 +85,7 @@ class C_SUN_ColorPick(C_SUN_ToolBase):
     name =                "Color Pick"
     output_lines =        15
     output_type =         TParamType.text
-    section =             TSections["Images"]
+    section =             TSections["Image"]
 
     inputs = {}
 

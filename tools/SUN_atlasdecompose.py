@@ -23,7 +23,7 @@ class C_SUN_AtlasDecompose(C_SUN_ToolBase):
     name =                "Atlas Decompose"
     output_type =         TParamType.text
     output_lines =        10
-    section =             TSections["Images"]
+    section =             TSections["Image"]
 
     inputs = {}
 

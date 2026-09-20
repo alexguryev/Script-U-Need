@@ -51,7 +51,7 @@ The application opens in your browser at `http://127.0.0.1:7860`.
 
 ## Tools
 
-### Images
+### Image
 
 | Tool | Description |
 |------|-------------|
