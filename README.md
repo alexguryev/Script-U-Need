@@ -61,6 +61,12 @@ The application opens in your browser at `http://127.0.0.1:7860`.
 | **Clear Metadata** | Strips EXIF and other metadata from images without quality loss |
 | **Color Pick** | Extracts the color of a pixel at given coordinates; outputs HEX and RGB |
 
+### Video
+
+| Tool | Description |
+|------|-------------|
+| **Video Conform** | Conforms video files to a target frame size, timing and orientation: aspect-preserving resize/pad or plain scale, FPS/frame-count via Manual control or a video-generator Preset (Flux 3.0, Gemini Omni Flash 1.1, Kling 2.6/3.0, Minimax H3, Seedance 2.0/2.5, Veo 3.1, Wan 3.0), reverse, Freeze/Ping-pong padding for shorter clips. Source: single file, folder or archive. Requires `ffmpeg`/`ffprobe` in PATH |
+
 ### ComfyUI
 
 | Tool | Description |

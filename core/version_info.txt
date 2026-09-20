@@ -3,6 +3,10 @@
 - sections re-order
 - section `Video`
     - `Video Conform`
+    - fix: duration slider bounds no longer shrink dynamically on generator switch
+      (could desync with a stale frontend value and crash on run)
+    - fix: Manual scheme Frames field crashed when set to 0; now 0 keeps the source
+      frame count unchanged (per file)
 ---
 `1.3.6 (2026.07.28)`
 - dependencies fix

@@ -29,7 +29,7 @@ SCHEME_PRESET = "Preset"
 SCHEME_MANUAL = "Manual"
 SCHEME_CHOICES = [SCHEME_PRESET, SCHEME_MANUAL]
 
-MIN_FRAMES = 1 # lowest target frame count accepted by every output container (mp4/mov/avi)
+MIN_FRAMES = 0 # 0 = keep the source frame count unchanged (no trim/pad); otherwise an explicit target
 
 Q_CHOICES = ["High", "Good", "Medium", "Low"]
 Q_CRF = {"High": 16, "Good": 20, "Medium": 24, "Low": 28} # libx264 (mp4, mov)
@@ -91,7 +91,7 @@ def even(value):
 
 
 # #########################################################################
-def norm_frames(value): # any user input -> valid target frame count
+def norm_frames(value): # any user input -> valid target frame count (0 = keep source unchanged)
     try:
         val = int(round(float(value)))
     except Exception:
@@ -135,6 +135,14 @@ GEN_PRESETS = {
                                "frames": lambda d: _grid_frames(d * 30, 4, 1)},
 }
 DEFAULT_GEN = next(iter(GEN_PRESETS)) # "Flux 3.0"
+# фиксированные границы слайдера длительности - охватывают все пресеты разом.
+# Причина: если менять min/max слайдера через gr.update() при смене генератора,
+# фронтенд Gradio иногда не успевает переслать актуальное значение раньше следующего
+# запроса - на сервер уходит старое значение с уже подросшим минимумом, и Slider.preprocess
+# роняет "Value X is less than minimum value Y". Реальный диапазон конкретного генератора
+# соблюдается клэмпом значения на сервере (см. on_gen_change/on_gen_duration_change/run()).
+GEN_DUR_MIN = min(p["dur_min"] for p in GEN_PRESETS.values())
+GEN_DUR_MAX = max(p["dur_max"] for p in GEN_PRESETS.values())
 
 
 # #########################################################################
@@ -232,8 +240,12 @@ class C_SUN_Conform(C_SUN_ToolBase):
     1.0.0 - video conform: frame size, frame rate, reverse, duration padding
     1.1.0 - Timing: Preset scheme (video-generator presets with real frame count) or Manual scheme
             (direct FPS + Frames control); replaces the old Frame Rate section and free-form Duration
+    1.1.1 - fix: duration slider bounds no longer shrink dynamically on generator switch, which could
+            desync with a stale frontend value and raise "less than minimum" on run;
+            Manual scheme: Frames field accepts 0, meaning "keep the source frame count unchanged"
+            (per file, since sources may differ in length); fixes a crash when 0 was typed in
     """
-    version =             "1.1.0"
+    version =             "1.1.1"
 
     src_select =          [CH_SINGLE, CH_FOLDER, CH_ARCHIVE]
     icon =                "🎬 "
@@ -406,15 +418,19 @@ class C_SUN_Conform(C_SUN_ToolBase):
                     fps = gr.Dropdown(value=p["fps"], choices=FPS_CHOICES, label="FPS",
                                       info="0 = keep / conform without interpolation: frame count is preserved",
                                       interactive=True, allow_custom_value=False)
-                    frames = gr.Number(value=int(p["frames"]), label="Frames", info="target frame count",
+                    frames = gr.Number(value=int(p["frames"]), label="Frames",
+                                       info="target frame count; 0 = keep the source frame count unchanged",
                                        minimum=MIN_FRAMES, step=1, precision=0, interactive=True)
 
                 with gr.Column(visible=(not is_manual)) as preset_pan:
                     gen_name = gr.Dropdown(value=p["gen_name"], choices=list(GEN_PRESETS.keys()),
                                            label="Generator", interactive=True, allow_custom_value=False)
-                    gen_duration = gr.Slider(value=int(p["gen_duration"]), minimum=gen_preset["dur_min"],
-                                             maximum=gen_preset["dur_max"], step=gen_preset["dur_step"],
-                                             label="Duration, sec", interactive=True)
+                    gen_duration = gr.Slider(value=int(p["gen_duration"]), minimum=GEN_DUR_MIN,
+                                             maximum=GEN_DUR_MAX, step=gen_preset["dur_step"],
+                                             label="Duration, sec",
+                                             info=f"valid range for {p['gen_name']}: "
+                                                  f"{gen_preset['dur_min']}-{gen_preset['dur_max']}",
+                                             interactive=True)
                     with gr.Row():
                         gen_fps_ro = gr.Number(value=gen_preset["fps"], label="FPS", interactive=False)
                         gen_frames_ro = gr.Number(value=gen_preset["frames"](int(p["gen_duration"])),
@@ -489,22 +505,24 @@ class C_SUN_Conform(C_SUN_ToolBase):
                 dur = preset["dur_min"]
                 self._set_param("gen_duration", dur)
                 return (
-                    gr.update(minimum=preset["dur_min"], maximum=preset["dur_max"],
-                             step=preset["dur_step"], value=dur),
+                    gr.update(step=preset["dur_step"], value=dur,
+                             info=f"valid range for {value}: {preset['dur_min']}-{preset['dur_max']}"),
                     gr.update(value=preset["fps"]),
                     gr.update(value=preset["frames"](dur)),
                 )
             gen_name.change(fn=on_gen_change, inputs=gen_name, outputs=[gen_duration, gen_fps_ro, gen_frames_ro])
 
-            # duration slider - refresh the real-frames readout for the current generator
+            # duration slider - clamp to the current generator's real range, refresh the real-frames readout
             def on_gen_duration_change(gname, dur_val):
                 if gname not in GEN_PRESETS:
                     gname = DEFAULT_GEN
                 preset = GEN_PRESETS[gname]
                 dur = int(round(float(dur_val)))
+                dur = max(preset["dur_min"], min(preset["dur_max"], dur))
                 self._set_param("gen_duration", dur)
-                return gr.update(value=preset["frames"](dur))
-            gen_duration.change(fn=on_gen_duration_change, inputs=[gen_name, gen_duration], outputs=gen_frames_ro)
+                return gr.update(value=preset["frames"](dur)), gr.update(value=dur)
+            gen_duration.input(fn=on_gen_duration_change, inputs=[gen_name, gen_duration], # `input`, not
+                               outputs=[gen_frames_ro, gen_duration])                      # `change`: see note above
 
         self._selector_out = [file_in_pan, folder_in_pan, arch_in_pan]
         self._selector_inputs = [file_in, folder_in, arch_in]
@@ -561,9 +579,10 @@ class C_SUN_Conform(C_SUN_ToolBase):
         src_frames = info["frames"]
 
         # timing: target frame count is already resolved (Manual: user value / Preset: generator's real frames)
+        # Manual 0 = keep the source frame count unchanged, resolved per file since sources may differ in length
         trim_frames = 0
         pad_frames = 0
-        tgt_frames = max(1, int(frames))
+        tgt_frames = src_frames if int(frames) <= 0 else max(1, int(frames))
         if tgt_frames < src_frames:
             trim_frames = tgt_frames
         elif tgt_frames > src_frames:
