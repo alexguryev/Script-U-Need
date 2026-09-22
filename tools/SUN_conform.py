@@ -119,6 +119,10 @@ GEN_PRESETS = {
                                "frames": lambda d: d * 24},
     "Gemini Omni Flash 1.1": {"fps": 24, "dur_min": 3, "dur_max": 10, "dur_step": 1, "code": "of11",
                                "frames": lambda d: d * 24},
+    "Higgsfield Genjutsu":   {"fps": 24, "dur_min": 4, "dur_max": 30, "dur_step": 1, "code": "genj",
+                               "frames": lambda d: d * 24},
+    "Higgsfield Standard":   {"fps": 30, "dur_min": 3, "dur_max": 5, "dur_step": 2, "code": "higgs",
+                               "frames": lambda d: d * 30},
     "Kling 2.6":             {"fps": 24, "dur_min": 5, "dur_max": 10, "dur_step": 5, "code": "k26",
                                "frames": lambda d: d * 24},
     "Kling 3.0":             {"fps": 24, "dur_min": 3, "dur_max": 15, "dur_step": 1, "code": "k30",
@@ -244,8 +248,13 @@ class C_SUN_Conform(C_SUN_ToolBase):
             desync with a stale frontend value and raise "less than minimum" on run;
             Manual scheme: Frames field accepts 0, meaning "keep the source frame count unchanged"
             (per file, since sources may differ in length); fixes a crash when 0 was typed in
+    1.1.2 - added Higgsfield Genjutsu (24 fps, 4-30 s) and Higgsfield Standard (30 fps, 3 or 5 s) presets;
+            Preset scheme's read-only frame count field is now labeled "Frames" too (was "Real
+            frames"), matching the Manual scheme field; the two remain fully independent values -
+            the Preset one is computed from the generator/duration, the Manual one is typed in
+            and never overwritten by a preset switch
     """
-    version =             "1.1.1"
+    version =             "1.1.2"
 
     src_select =          [CH_SINGLE, CH_FOLDER, CH_ARCHIVE]
     icon =                "🎬 "
@@ -434,8 +443,9 @@ class C_SUN_Conform(C_SUN_ToolBase):
                     with gr.Row():
                         gen_fps_ro = gr.Number(value=gen_preset["fps"], label="FPS", interactive=False)
                         gen_frames_ro = gr.Number(value=gen_preset["frames"](int(p["gen_duration"])),
-                                                  label="Real frames",
-                                                  info="actual output frame count for this generator/duration",
+                                                  label="Frames",
+                                                  info="actual output frame count for this generator/duration, "
+                                                       "independent of the Manual Frames value",
                                                   interactive=False)
 
                 with gr.Row():
